@@ -56,7 +56,7 @@ const Chat = ({ profile }) => {
 
     try {
       const chatResponse = await axios.post("/chat", {
-        prompt: `User: ${userMessage}\nAssistant:`,
+        prompt: `User: ${input}\nAssistant:`,
       });
 
       const botResponse =

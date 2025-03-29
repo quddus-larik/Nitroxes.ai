@@ -21,9 +21,16 @@ function App() {
             email: user.email, 
             nickname: user.nickname || user.name 
           });
+          if(!response.data){
+            console.log("User already registered");
+            sessionStorage.setItem("UserSession", JSON.stringify(response.data.previousRequests));
+            console.log("Previous chats saved to session storage");
+            return;
+          }else{
           console.log("User registration successful:", response.data);
           sessionStorage.setItem("UserSession", JSON.stringify(response.data.user.previousRequests));
           console.log("Previous chats saved to session storage");
+          }
         } catch (err) {
           console.error("Error registering user:", err);
         }
