@@ -17,6 +17,49 @@ This AI chatbot is a **React-based** application that utilizes **[Google Gemini 
   A simple, functional interface designed for usability over aesthetics.  
 
 - **📂 GitHub Integration**  
-  The project is structured for collaboration and version control on **[GitHub](https://github.com/)**.  
+  The project is structured for collaboration and version control on **[GitHub](https://github.com/)**.
+
 
 This chatbot serves as a reliable AI assistant, leveraging **[Gemini API](https://ai.google.dev/)'s intelligence** and **[Auth0](https://auth0.com/)** authentication to deliver a secure and interactive experience.  
+
+## Build With Vite + TS + Rust comipiler
+The Project Developed With High performance Vite React Faramework.
+
+#### Client 
+Simple AI system request response Web handle RESTAPIs.
+
+#### Server
+Faster Server Response Build With Node FrameWork ExpressJS.
+**Requirements**
+- Express
+- dotenv
+- mongoose (DataBase)
+
+## Setup Project
+#### **Requirements**
+- NodeJS v18+
+#### **React Packages**
+- Tailwindcss (css writing) v3 
+- React Markdown
+- Axios (API handling)
+- Auth0
+
+**Clone The Git Repo**
+```bash
+git clone https://github.com/EnderTonol/Nitroxes.ai.git
+```
+**Install required packages in Both Backend & Frontend**
+```bash
+npm install 
+```
+**Run Client(Front-end) >** 
+`npm start`
+<br/>
+**Run Server(Back-end) >**
+`npm start`
+
+
+
+
+
+
