@@ -22,6 +22,15 @@ This AI chatbot is a **React-based** application that utilizes **[Google Gemini 
 
 This chatbot serves as a reliable AI assistant, leveraging **[Gemini API](https://ai.google.dev/)'s intelligence** and **[Auth0](https://auth0.com/)** authentication to deliver a secure and interactive experience.  
 
+## snapShots
+#### Home Page
+![](./snapshots/home.png)
+#### Login page
+![](./snapshots/Login.png)
+#### Primary Page
+![](./snapshots/working.png)
+
+
 ## Build With Vite + TS + Rust comipiler
 The Project Developed With High performance Vite React Faramework.
 
@@ -29,7 +38,7 @@ The Project Developed With High performance Vite React Faramework.
 Simple AI system request response Web handle RESTAPIs.
 
 #### Server
-Faster Server Response Build With Node FrameWork ExpressJS.
+Faster Server Response Build With Node FrameWork ExpressJS. <br/>
 **Requirements**
 - Express
 - dotenv
@@ -57,6 +66,7 @@ npm install
 <br/>
 **Run Server(Back-end) >**
 `npm start`
+
 
 
 
