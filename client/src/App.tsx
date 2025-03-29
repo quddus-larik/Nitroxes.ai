@@ -22,6 +22,8 @@ function App() {
             nickname: user.nickname || user.name 
           });
           console.log("User registration successful:", response.data);
+          sessionStorage.setItem("UserSession", JSON.stringify(response.data.user.previousRequests));
+          console.log("Previous chats saved to session storage");
         } catch (err) {
           console.error("Error registering user:", err);
         }

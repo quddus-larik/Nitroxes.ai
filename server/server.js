@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
-const { createUser, saveChat, User, getChatHistory } = require("./controllers/useController");
+const { createUser, saveChat, User, getChat } = require("./controllers/useController");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -69,26 +69,18 @@ app.post("/save-chat", async (req, res) => {
     }
 });
 
-app.get("/get-chat-history", async (req, res) => {
+app.get("/previous-chats/:email", async (req, res) => {
     try {
-        const { email } = req.query; 
-        if (!email) {
-            return res.status(400).json({ error: "Email is required" });     
-        }
-        
-        console.log("Fetching chat history for email:", email);
-        const chatHistory = await getChatHistory(email);
-        
-        console.log("Returning chat history with", chatHistory.length, "messages");
-        // Return in a consistent format that matches what the client expects
-        res.json({ 
-            previousRequests: chatHistory,
-            count: chatHistory.length
-        });
-    } catch (error) {
-        console.error("Error fetching chat history:", error);
-        res.status(500).json({ error: "Something went wrong", details: error.message }); 
-    } 
+       const prev_chats = await getChat(req.params.email);
+       if(prev_chats === 'ERROR'){
+        return res.status(404).json({ error: "User not found" });
+       }else{
+        res.json({ previousRequests: prev_chats });
+       }
+    } catch (error){
+        console.error("Error in get-chats endpoint:", error);
+        res.status(500).json({ error: "Something went wrong", details: error.message });
+    }
 })
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

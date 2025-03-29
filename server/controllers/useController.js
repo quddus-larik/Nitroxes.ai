@@ -91,27 +91,20 @@ async function saveChat(email, chat){
         throw error;
     }
 }
-
-async function getChatHistory(email) {
-    try {
-        console.log("getChatHistory function called with email:", email);
-        
-        if (!email) {
-            throw new Error("Email is required");
+async function getChat(em){
+    try{
+        const userDetail = await User.findOne({ email: em });
+        console.log("UserDetail:", userDetail);
+        if(!userDetail){
+            console.log("User not found in database");
+            return 'ERROR';
         }
-        
-        const userDetail = await User.findOne({ email: email });
-        
-        if (userDetail && userDetail.previousRequests) {
-            return userDetail.previousRequests; 
-        } else {
-            console.log("User not found or no chat history for email:", email);
-            return [];
-        }
-    } catch (error) {
-        console.error("Error getting chat history:", error);
-        throw error;
+        return userDetail.previousRequests;
+    }catch(error){
+        console.error("Error in getChat function:", error);
+        return 'ERROR';
     }
 }
 
-module.exports = { User, createUser, saveChat, getChatHistory };
+
+module.exports = { User, createUser, saveChat, getChat };
