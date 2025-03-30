@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Connect to MongoDB first
 mongoose.connect('mongodb://127.0.0.1:27017/chatbot', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -8,7 +7,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/chatbot', {
 .then(() => console.log('MongoDB connected successfully'))
 .catch(err => console.error('MongoDB connection error:', err));
 
-// Define a more specific schema for chat messages
 const chatMessageSchema = new mongoose.Schema({
     user_input: String,
     response: String,
@@ -21,7 +19,7 @@ const chatMessageSchema = new mongoose.Schema({
 const userSchema = new mongoose.Schema({
     email: String,
     nickname: String,
-    previousRequests: [chatMessageSchema], // Use the specific schema
+    previousRequests: [chatMessageSchema],
     firstSignedDate: { 
         type: Date, 
         default: Date.now 

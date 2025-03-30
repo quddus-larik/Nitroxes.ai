@@ -1,18 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import Chat from './components/chat.tsx';
+import Chat from './components/chat';
 import axios from 'axios';
 
 function App() {
-  const { user, loginWithRedirect, logout, isAuthenticated } = useAuth0();
+  const { user, loginWithRedirect, logout, isAuthenticated, isLoading: authLoading } = useAuth0();
+  const [isUserRegistered, setIsUserRegistered] = useState(false);
 
-  // Handle user sign-in
   const handleSignIn = async () => {
     await loginWithRedirect();
   }
-  user? console.log("User signed in:", user) : console.log("User not signed in");
   
-  // Use useEffect to handle the post-login API call
+  useEffect(() => {
+    if (user) {
+      console.log("User signed in:", user);
+    } else {
+      console.log("User not signed in");
+    }
+  }, [user]);
+  
   useEffect(() => {
     const registerUser = async () => {
       if (isAuthenticated && user) {
@@ -21,47 +27,80 @@ function App() {
             email: user.email, 
             nickname: user.nickname || user.name 
           });
-          if(!response.data){
+          
+          if (!response.data) {
             console.log("User already registered");
-            sessionStorage.setItem("UserSession", JSON.stringify(response.data.previousRequests));
-            console.log("Previous chats saved to session storage");
+            setIsUserRegistered(true);
             return;
-          }else{
-          console.log("User registration successful:", response.data);
-          sessionStorage.setItem("UserSession", JSON.stringify(response.data.user.previousRequests));
-          console.log("Previous chats saved to session storage");
+          } else {
+            console.log("User registration successful:", response.data);
+            
+            const previousRequests = response.data.user?.previousRequests || [];
+            sessionStorage.setItem("UserSession", JSON.stringify(previousRequests));
+            console.log("Previous chats saved to session storage");
+            setIsUserRegistered(true);
           }
         } catch (err) {
           console.error("Error registering user:", err);
+          setIsUserRegistered(true);
         }
       }
     };
     
     registerUser();
   }, [isAuthenticated, user]);
+
+  if (authLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen text-white bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
+        <div className="px-6 py-4 rounded-lg border backdrop-blur-sm bg-gray-700/50 border-gray-600/30">
+          <div className="flex space-x-3">
+            <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
+            <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
+            <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen text-white bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
-      <nav className="bg-gradient-to-r from-gray-900 to-gray-800 shadow-lg backdrop-blur-sm border-b border-gray-700/30">
+      <nav className="bg-gradient-to-r from-gray-900 to-gray-800 border-b shadow-lg backdrop-blur-sm border-gray-700/30">
         <div className="flex justify-between items-center px-6 py-4 mx-auto max-w-7xl">
           <h1 className="flex items-center text-xl font-bold">
-            
-            <span className="text-white flex flex-row items-center justify-center gap-3">
-              {isAuthenticated && user? <img src={user.picture} className="h-8 w-8 object-cover rounded-full border border-gray-600/50" /> : null }
+            <div className="flex justify-center items-center mr-3 w-10 h-10 rounded-full border bg-blue-500/20 border-blue-500/30">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6 text-blue-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                />
+              </svg>
+            </div>
+            <span className="flex flex-row gap-3 justify-center items-center text-white">
+              {isAuthenticated && user ? <img src={user.picture} alt="Profile" className="object-cover w-8 h-8 rounded-full border border-gray-600/50" /> : null}
               {isAuthenticated && user ? user.nickname : "Nitroxes AI"}
             </span>
           </h1>
           {
             isAuthenticated ? 
             <button 
-              onClick={() => logout()}
-              className="px-4 py-2 text-white bg-gradient-to-r from-red-600 to-red-700 rounded-lg shadow-lg hover:from-red-700 hover:to-red-800 transition-all duration-200 border border-red-500/30"
+              onClick={() => logout({ returnTo: window.location.origin })}
+              className="px-4 py-2 text-white bg-gradient-to-r from-red-600 to-red-700 rounded-lg border shadow-lg transition-all duration-200 hover:from-red-700 hover:to-red-800 border-red-500/30"
             >
               Logout
             </button> : 
             <button 
               onClick={handleSignIn}
-              className="px-4 py-2 text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 border border-blue-500/30"
+              className="px-4 py-2 text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg border shadow-lg transition-all duration-200 hover:from-blue-600 hover:to-blue-700 border-blue-500/30"
             >
               Sign In
             </button>
@@ -69,11 +108,11 @@ function App() {
         </div>
       </nav>
       <main className="px-4 py-8 mx-auto max-w-7xl">
-        {isAuthenticated && user ? <Chat profile={user}/> : (
+        {isAuthenticated && user ? <Chat key={user.email} profile={user}/> : (
           <div className="flex flex-col justify-center items-center w-full h-[80vh]">
-            <div className="p-10 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-xl border border-gray-700/30 max-w-md w-full backdrop-blur-sm">
+            <div className="p-10 w-full max-w-md bg-gradient-to-b from-gray-800 to-gray-900 rounded-2xl border shadow-xl backdrop-blur-sm border-gray-700/30">
               <div className="flex flex-col items-center space-y-8">
-                <div className="p-8 rounded-full bg-blue-500/10 border border-blue-500/20">
+                <div className="p-8 rounded-full border bg-blue-500/10 border-blue-500/20">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-20 h-20 text-blue-400"
@@ -93,7 +132,7 @@ function App() {
                   <h2 className="mb-3 text-3xl font-bold text-white">
                     Nitroxes AI
                   </h2>
-                  <p className="mb-6 text-gray-400 text-center">
+                  <p className="mb-6 text-center text-gray-400">
                     Your intelligent AI assistant powered by advanced language models.
                     <br />
                     Please sign in to start a conversation.
@@ -101,7 +140,7 @@ function App() {
                 </div>
                 <button 
                   onClick={handleSignIn}
-                  className="px-6 py-3 w-full text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 border border-blue-500/30 flex items-center justify-center"
+                  className="flex justify-center items-center px-6 py-3 w-full text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg border shadow-lg transition-all duration-200 hover:from-blue-600 hover:to-blue-700 border-blue-500/30"
                 >
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
@@ -121,12 +160,12 @@ function App() {
                 </button>
                 <span className='text-sm text-orange-400'>Project is Developed my Quddus & fully open source for solving Issues, add Features and more. </span>
                 
-                <div className="pt-4 w-full border-t border-gray-700/50 mt-4">
+                <div className="pt-4 mt-4 w-full border-t border-gray-700/50">
                   <a 
                     href="https://github.com/EnderTonol" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center text-gray-400 hover:text-white transition-colors duration-200"
+                    className="flex justify-center items-center text-gray-400 transition-colors duration-200 hover:text-white"
                   >
                     <svg 
                       xmlns="http://www.w3.org/2000/svg" 
