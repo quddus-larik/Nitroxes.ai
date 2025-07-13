@@ -67,7 +67,7 @@ npm install
 **Run Server(Back-end) >**
 `npm start`
 
-### Note: It is not Deployed For Live Preview! to avoid Error due to Express Server
+### Note: It is not Deployed For Live Preview! un deployed express server
 
 
 
